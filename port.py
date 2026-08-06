@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import argparse
 import shutil
+import struct
 import subprocess
 import sys
 from pathlib import Path
@@ -62,8 +63,17 @@ def main():
     if not PATCHER.exists():
         return fail(f"{PATCHER.name} missing from the repo")
 
-    if (game_dir / "FalloutNV_backup.exe").exists():
-        ok("FalloutNV.exe already patched (backup exists)")
+    exe = game_dir / "FalloutNV.exe"
+
+    def esta_parcheado():
+        # LAA (0x20) en el COFF header + import de nvse_steam_loader
+        d = exe.read_bytes()
+        pe = struct.unpack("<I", d[0x3C:0x40])[0]
+        laa = bool(struct.unpack("<H", d[pe + 0x16:pe + 0x18])[0] & 0x20)
+        return laa and b"nvse_steam_loader" in d
+
+    if esta_parcheado():
+        ok("FalloutNV.exe ya está parcheado (LAA + auto-load NVSE)")
         return 0
 
     dst = game_dir / "FalloutNVPatcher"
