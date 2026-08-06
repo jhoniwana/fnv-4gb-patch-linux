@@ -1,22 +1,22 @@
 # FNV 4GB Patcher — Linux Port
 
-Port nativo a Linux del [FNV4GB Patcher (for Proton)](https://www.nexusmods.com/newvegas/mods/62552). Sin Wine: el patcher incluido (`FalloutNVPatcher`) es la build **ELF nativo Linux** ("for Proton") del mod.
+Native Linux port of the [FNV4GB Patcher (for Proton)](https://www.nexusmods.com/newvegas/mods/62552). No Wine: the included `FalloutNVPatcher` is the **native Linux ELF** ("for Proton") build of the mod.
 
-## Uso
+## Usage
 
 ```bash
-python3 port.py [--game-dir /ruta/al/juego]
+python3 port.py [--game-dir /path/to/game]
 ```
 
-## Qué hace
+## What it does
 
-1. Copia `FalloutNVPatcher` (ELF) al directorio del juego
-2. Lo ejecuta → modifica `FalloutNV.exe` (heap de 4GB)
-3. Verifica el éxito por la existencia de `FalloutNV_backup.exe` (el ELF sale con código 0 incluso si falla)
+1. Copies `FalloutNVPatcher` (ELF) to the game directory
+2. Runs it → modifies `FalloutNV.exe` (4GB heap)
+3. Verifies success by the presence of `FalloutNV_backup.exe` (the ELF exits with code 0 even on failure)
 
-Verificado en juego real: `FalloutNV.exe patched!` + backup creado.
+Verified on a real game: `FalloutNV.exe patched!` + backup created.
 
-## Notas
+## Notes
 
-- En Steam se usa ESTE patcher. El **Epic Games Patcher** (también del pack) es SOLO para la versión EGS — ver `epic-games-patcher-linux`.
-- El `FalloutNV.exe` parcheado sigue matcheando los SHA1 soportados del instalador de UE ESM Fixes (hash `0021023E...` en la lista del autor).
+- Use THIS patcher on Steam. The **Epic Games Patcher** (from the same pack) is ONLY for the EGS version — see `epic-games-patcher-linux`.
+- The patched `FalloutNV.exe` still matches the SHA1s supported by the UE ESM Fixes installer (hash `0021023E...` in the author's list).

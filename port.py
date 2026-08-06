@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-"""FNV 4GB Patcher — Linux port.
+"""FNV 4GB Patcher - Linux port.
 
-Aplica el parche de 4GB a FalloutNV.exe usando el ELF nativo
-FalloutNVPatcher (la build "for Proton" del mod). Sin Wine.
+Applies the 4GB patch to FalloutNV.exe using the native ELF
+FalloutNVPatcher (the "for Proton" build of the mod). No Wine.
 
-El ELF corre desde el directorio del juego y modifica FalloutNV.exe
-creando FalloutNV_backup.exe. ⚠️ El ELF sale con código 0 incluso si
-falla ("FalloutNV.exe not found!") → el éxito se detecta por la
-existencia del backup.
+The ELF runs from the game directory and modifies FalloutNV.exe, creating
+FalloutNV_backup.exe. NOTE: the ELF exits with code 0 even on failure
+("FalloutNV.exe not found!") - success is detected by the presence of the
+backup file.
 
-Uso:
+Usage:
   python3 port.py [--game-dir DIR]
 """
 from __future__ import annotations
@@ -31,19 +31,19 @@ STEAM_LIBRARIES = [
 
 
 def info(msg):
-    print(f"  ℹ {msg}", flush=True)
+    print(f"  i {msg}", flush=True)
 
 
 def ok(msg):
-    print(f"  ✔ {msg}", flush=True)
+    print(f"  + {msg}", flush=True)
 
 
 def fail(msg, code=1):
-    print(f"  ✘ {msg}", flush=True)
+    print(f"  ! {msg}", flush=True)
     return code
 
 
-def buscar_juego():
+def find_game():
     for lib in STEAM_LIBRARIES:
         cand = lib / "common" / GAME_DIR_NAME
         if (cand / "FalloutNV.exe").exists():
@@ -56,27 +56,27 @@ def main():
     ap.add_argument("--game-dir")
     args = ap.parse_args()
 
-    game_dir = Path(args.game_dir) if args.game_dir else buscar_juego()
+    game_dir = Path(args.game_dir) if args.game_dir else find_game()
     if game_dir is None:
-        return fail("no encontré el juego — usá --game-dir")
+        return fail("game not found - use --game-dir")
     if not PATCHER.exists():
-        return fail(f"falta {PATCHER.name} en el repo")
+        return fail(f"{PATCHER.name} missing from the repo")
 
     if (game_dir / "FalloutNV_backup.exe").exists():
-        ok("FalloutNV.exe ya estaba parcheado (existe el backup)")
+        ok("FalloutNV.exe already patched (backup exists)")
         return 0
 
     dst = game_dir / "FalloutNVPatcher"
     shutil.copy2(PATCHER, dst)
     dst.chmod(0o755)
-    info("parcheando FalloutNV.exe (ELF nativo)...")
+    info("patching FalloutNV.exe (native ELF)...")
     r = subprocess.run([str(dst)], cwd=str(game_dir), capture_output=True,
                        text=True, timeout=120)
-    salida = (r.stdout + r.stderr).strip()
+    output = (r.stdout + r.stderr).strip()
     if (game_dir / "FalloutNV_backup.exe").exists():
-        ok(f"FalloutNV.exe parcheado ({salida[-60:] or 'backup creado'})")
+        ok(f"FalloutNV.exe patched ({output[-60:] or 'backup created'})")
         return 0
-    return fail(f"el patcher no creó el backup. Salida: {salida[:120]}")
+    return fail(f"patcher did not create the backup. Output: {output[:120]}")
 
 
 if __name__ == "__main__":
