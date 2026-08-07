@@ -15,6 +15,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import os
 import shutil
 import struct
 import subprocess
@@ -27,8 +28,10 @@ GAME_DIR_NAME = "Fallout New Vegas"
 STEAM_LIBRARIES = [
     Path.home() / ".steam/steam/steamapps",
     Path.home() / ".local/share/Steam/steamapps",
-    Path("/mnt/games/steamapps"),
 ]
+EXTRA_LIBRARY = os.environ.get("VNV_STEAM_LIBRARY")
+if EXTRA_LIBRARY:
+    STEAM_LIBRARIES.append(Path(EXTRA_LIBRARY))
 
 
 def info(msg):
