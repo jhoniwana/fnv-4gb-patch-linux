@@ -82,7 +82,7 @@ def main():
     except Exception as e:
         return fail(f"could not read {exe.name}: {e}")
     if parcheado:
-        ok("FalloutNV.exe ya está parcheado (LAA + auto-load NVSE)")
+        ok("FalloutNV.exe already patched (LAA + auto-load NVSE)")
         return 0
 
     dst = game_dir / "FalloutNVPatcher"
