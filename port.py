@@ -70,12 +70,18 @@ def main():
 
     def esta_parcheado():
         # LAA (0x20) en el COFF header + import de nvse_steam_loader
+        if not exe.exists():
+            raise FileNotFoundError(f"{exe} not found (game dir correcto?)")
         d = exe.read_bytes()
         pe = struct.unpack("<I", d[0x3C:0x40])[0]
         laa = bool(struct.unpack("<H", d[pe + 0x16:pe + 0x18])[0] & 0x20)
         return laa and b"nvse_steam_loader" in d
 
-    if esta_parcheado():
+    try:
+        parcheado = esta_parcheado()
+    except Exception as e:
+        return fail(f"could not read {exe.name}: {e}")
+    if parcheado:
         ok("FalloutNV.exe ya está parcheado (LAA + auto-load NVSE)")
         return 0
 
